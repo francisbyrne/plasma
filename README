@@ -1,0 +1,7 @@
+plasma
+
+A simple plasma fractal generator using HTML5.
+Built on Meteor framework, using the Twitter Bootstrap package.
+
+Requirements:
+ - Install Meteor framework; see docs.meteor.com for details.
