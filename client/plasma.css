@@ -1,0 +1,14 @@
+/* CSS declarations go here */
+
+body {
+  background-color: #333;
+}
+
+#fractal-container {
+  background-color: #ccc;
+}
+
+#fractal {
+  border: 2px solid black;
+  .border-radius(4px);
+}

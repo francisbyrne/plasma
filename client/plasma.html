@@ -1,0 +1,56 @@
+<head>
+  <title>plasma</title>
+</head>
+
+<body>
+{{>body}}
+</body>
+
+<template name="body">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        {{>nav}}
+        <div class="span6 offset3" style="text-align:center">
+          {{>fractal}}
+          {{>loader}}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="fractal">
+  <br /><br /><br />
+  <div id="fractal-container" style="border:2px solid black;padding-top:7px">
+    <canvas id="fractal" width="400px" height="420px">
+      Your browser is not compatible with HTML5. 
+      Please upgrade your browser to view this wonderful plasma fractal!
+    </canvas>
+  </div>
+  <div id="buttons" class="" style="margin:10px auto">
+    <button id="generate" class="btn btn-primary"><i class="icon-repeat"></i>  Generate New Fractal</button>
+  </div>
+</template>
+
+<template name="loader">
+  {{#if show}}
+  <div class="loader">
+    <img src="loader.gif" alt="Loading..." />
+  </div>
+  {{/if}}
+</template>
+
+<template name="nav">
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">Plasma Fractals</a>
+        <ul class="nav">
+          <li><a href="#">Github</a></li>
+          <li><a href="https://twitter.com/byrnify">@byrnify</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
