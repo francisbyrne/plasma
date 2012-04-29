@@ -10,5 +10,14 @@ body {
 
 #fractal {
   border: 2px solid black;
-  .border-radius(4px);
+}
+
+#content {
+  padding-top: 50px;
+}
+
+.rounded-corners {
+  -moz-border-radius: 10px; /* Firefox */
+  -webkit-border-radius: 10px; /* Safari, Chrome */
+  border-radius: 10px; /* CSS3 */
 }

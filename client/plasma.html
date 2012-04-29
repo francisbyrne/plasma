@@ -7,13 +7,32 @@
 </body>
 
 <template name="body">
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12">
-        {{>nav}}
-        <div class="span6 offset3" style="text-align:center">
+  {{>nav}}
+  <div id="content" class="container">
+    <div class="row">
+      <div class="row">
+        <div class="span3" style="color:white">
+          <h2>Instructions</h2>
+          <ol>
+            <li>Enter desired settings. (Integers only)</li>
+            <li>Select "Generate New Fractal" or press Enter.</li>
+          </ol>
+          <dl>
+            <dt>Roughness</dt>
+            <dd>
+              The randomness offset. Lower values mean smoother transition between colours.
+              <br />Default: 3.
+            </dd>
+            <br />
+            <dt>Pixelation</dt>
+            <dd>
+              The level of pixelation. Lower values mean more pixels are drawn.
+              <br />Default: 1
+            </dd>
+          </dl>
+        </div>
+        <div class="span6" style="text-align:center">
           {{>fractal}}
-          {{>loader}}
         </div>
       </div>
     </div>
@@ -21,16 +40,30 @@
 </template>
 
 <template name="fractal">
-  <br /><br /><br />
-  <div id="fractal-container" style="border:2px solid black;padding-top:7px">
-    <canvas id="fractal" width="400px" height="420px">
-      Your browser is not compatible with HTML5. 
-      Please upgrade your browser to view this wonderful plasma fractal!
-    </canvas>
+  <div class="row-fluid">
+    <div id="fractal-container" class="rounded-corners" style="border:3px solid black;padding-top:7px">
+      <canvas id="fractal" width="480px" height="480px">
+        Your browser is not compatible with HTML5. 
+        Please upgrade your browser to view this wonderful plasma fractal!
+      </canvas>
+    </div>
   </div>
-  <div id="buttons" class="" style="margin:10px auto">
-    <button id="generate" class="btn btn-primary"><i class="icon-repeat"></i>  Generate New Fractal</button>
+  <div class="row">
+    <div class="span4 offset1">
+      <br />
+      {{>config}}
+    </div>
   </div>
+</template>
+
+<template name="config">
+  <form class="well form-inline" action="#">
+    <input id="roughness" type="text" class="input-small" placeholder="Roughness">
+    <input id="pixelation" type="text" class="input-small" placeholder="Pixelation">
+  </form>
+  <button id="generate" class="btn btn-primary btn-large">
+    <i class="icon-repeat"></i> Generate New Fractal
+  </button>
 </template>
 
 <template name="loader">
