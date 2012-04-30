@@ -1,14 +1,5 @@
 var image_data = {};
 
-// TODO: get this working!
-// display loading gif
-Template.loader.show = function () {
-  if (typeof Session.get('is_loading') !== 'undefined')
-    return true;
-  else
-    return false;
-};
-
 Template.menu.is_fluid = function () {
   return Session.get('fluid_id');
 };
