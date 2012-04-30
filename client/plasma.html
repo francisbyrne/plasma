@@ -11,31 +11,44 @@
   <div id="content" class="container">
     <div class="row">
       <div class="row">
-        <div class="span3" style="color:white">
-          <h2>Instructions</h2>
-          <ol>
-            <li>Enter desired settings. (Integers only)</li>
-            <li>Select "Generate New Fractal" or press Enter.</li>
-          </ol>
-          <dl>
-            <dt>Roughness</dt>
-            <dd>
-              The randomness offset. Lower values mean smoother transition between colours.
-              <br />Default: 3.
-            </dd>
-            <br />
-            <dt>Pixelation</dt>
-            <dd>
-              The level of pixelation. Lower values mean more pixels are drawn.
-              <br />Default: 1
-            </dd>
-          </dl>
+        <div class="span3">
+          {{>instructions}}
         </div>
         <div class="span6" style="text-align:center">
           {{>fractal}}
         </div>
       </div>
     </div>
+  </div>
+</template>
+
+<template name="instructions">
+  <div id="instructions" style="color:white">
+    <h2>Instructions</h2>
+    <ol>
+      <li>Enter desired settings. (Integers only)</li>
+      <li>Select "Generate Fractal" or press Enter to generate a single fractal.</li>
+      <li>Select "Go Fluid" to regenerate the fractal in regular intervals.</li>
+    </ol>
+    <dl>
+      <dt>Roughness</dt>
+      <dd>
+        The randomness offset. Lower values mean smoother transition between colours.
+        <br />Default: 3.
+      </dd>
+      <br />
+      <dt>Pixelation</dt>
+      <dd>
+        The level of pixelation. Lower values mean more pixels are drawn.
+        <br />Default: 1
+      </dd>
+      <br />
+      <dt>Frequency</dt>
+      <dd>
+        The frequency that the fractal is regenerated in fluid mode, in milliseconds.
+        <br />Default: 500.
+      </dd>
+    </dl>
   </div>
 </template>
 
@@ -51,19 +64,31 @@
   <div class="row">
     <div class="span4 offset1">
       <br />
-      {{>config}}
+      {{>menu}}
     </div>
   </div>
 </template>
 
-<template name="config">
+<template name="menu">
   <form class="well form-inline" action="#">
     <input id="roughness" type="text" class="input-small" placeholder="Roughness">
     <input id="pixelation" type="text" class="input-small" placeholder="Pixelation">
+    <input id="frequency" type="text" class="input-small" placeholder="Frequency">
   </form>
-  <button id="generate" class="btn btn-primary btn-large">
-    <i class="icon-repeat"></i> Generate New Fractal
-  </button>
+  <div id="buttons">
+    <button id="generate" class="btn btn-primary btn-large">
+      <i class="icon-repeat"></i> Generate Fractal
+    </button>
+    {{#if is_fluid}}
+    <button id="stop-fluid" class="btn btn-primary btn-large">
+      <i class="icon-stop"></i> Stop!
+    </button>
+    {{else}}
+    <button id="go-fluid" class="btn btn-primary btn-large">
+      <i class="icon-play"></i> Go Fluid!
+    </button>
+    {{/if}}
+  </div>
 </template>
 
 <template name="loader">

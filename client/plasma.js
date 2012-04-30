@@ -9,6 +9,10 @@ Template.loader.show = function () {
     return false;
 };
 
+Template.menu.is_fluid = function () {
+  return Session.get('fluid_id');
+};
+
 // generate new fractal on mouse click
 Template.fractal.events = {
   'click button#generate, keyup input#roughness, keyup input#pixelation': function (evt) {
@@ -22,6 +26,19 @@ Template.fractal.events = {
       // generate a new fractal
       generate_new_fractal(roughness, pixelation);
     }
+  },
+  'click button#go-fluid': function (evt) {
+      // get the roughness, pixelation and frequency inputs
+      var roughness = $('#roughness').val();
+      var pixelation = $('#pixelation').val();
+      var frequency = $('#frequency').val();
+
+      // start fluid mode
+      go_fluid(roughness, pixelation, frequency);
+  },
+  'click button#stop-fluid': function (evt) {
+      // stop fluid mode
+      stop_fluid();
   }
 };
 
@@ -30,12 +47,35 @@ Meteor.startup(function () {
   generate_new_fractal();
 });
 
+var go_fluid = function (roughness, pixelation, frequency) {
+
+  var DEFAULT_FREQUENCY = 500; // 500ms
+
+    // set default roughness/pixelation values if they don't exist 
+  // or are invalid
+  if (is_number(frequency) && frequency != 0)
+    frequency = parseInt(frequency);
+  else
+    frequency = DEFAULT_FREQUENCY;
+
+  var fluid_id = Meteor.setInterval( function () {
+    generate_new_fractal(roughness, pixelation);
+  }, frequency);
+
+  Session.set('fluid_id', fluid_id);
+};
+
+var stop_fluid = function () {
+  Meteor.clearInterval( Session.get('fluid_id') );
+  Session.set('fluid_id', undefined);
+};
+
 
 // generate a new fractal based on the canvas with id="fractal"
 var generate_new_fractal = function (roughness_input, pixelation_input) {
 
   var DEFAULT_ROUGHNESS = 3;
-  var DEFAULT_PIXELATION = 1;
+  var DEFAULT_PIXELATION = 1; // 1px minimum pixel size
 
   // set default roughness/pixelation values if they don't exist 
   // or are invalid

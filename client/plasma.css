@@ -21,3 +21,8 @@ body {
   -webkit-border-radius: 10px; /* Safari, Chrome */
   border-radius: 10px; /* CSS3 */
 }
+
+.btn-large {
+  margin-left: 10px;
+  margin-right: 10px;
+}
