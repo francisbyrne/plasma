@@ -200,10 +200,7 @@ var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_
       set_pixel(
         Math.floor(x) + j, 
         Math.floor(y) + i, 
-        colour.red, 
-        colour.green, 
-        colour.blue, 
-        colour.alpha, 
+        colour,
         pixel_size );
       }
     }
@@ -247,10 +244,10 @@ var compute_color = function (c) {
 
 // set the red, green, blue and alpha components of a pixel at x, y
 // in the image_data array, which will be drawn to the canvas
-function set_pixel(x, y, red, green, blue, alpha, pixel_size) {
+function set_pixel(x, y, colour, pixel_size) {
   var index = (x + y * image_data.width) * 4;
-  image_data.data[index+0] = red;
-  image_data.data[index+1] = green;
-  image_data.data[index+2] = blue;
-  image_data.data[index+3] = alpha;
+  image_data.data[index+0] = colour.red;
+  image_data.data[index+1] = colour.green;
+  image_data.data[index+2] = colour.blue;
+  image_data.data[index+3] = colour.alpha;
 };
