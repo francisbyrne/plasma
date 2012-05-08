@@ -7,36 +7,16 @@
 </body>
 
 <template name="body">
-  {{>nav}}
-  <div id="content" class="container">
-    <div class="row">
-      <div class="row">
-        <div class="span3">
-          {{>instructions}}
-        </div>
-        <div class="span6" style="text-align:center">
-          {{>fractal}}
-        </div>
-      </div>
-    </div>
-  </div>
+  {{>fractal}}
 </template>
 
 <template name="fractal">
-  <div class="row span6">
-    <div id="fractal-container" class="rounded-corners" style="border:3px solid black;padding-top:7px">
-      <canvas id="fractal" height="240px" width="240px">
+    <div id="fractal-container" class="rounded-corners">
+      <canvas id="fractal">
         Your browser is not compatible with HTML5. 
         Please upgrade your browser to view this wonderful plasma fractal!
       </canvas>
     </div>
-  </div>
-  <div class="row">
-    <div class="span6">
-      <br />
-      {{>menu}}
-    </div>
-  </div>
 </template>
 
 <template name="instructions">

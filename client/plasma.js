@@ -54,28 +54,34 @@ Template.fractal.events = {
 // generate new fractal on page load
 Meteor.startup(function () {
   generate_new_fractal();
+  pixel_party();
 });
 
 // randomly spew coloured pixels onto the canvas
-var start_pixelify = function (roughness, pixelation, frequency) {
+var start_pixelify = function (roughness, pixelation, frequency, opacity) {
   var DEFAULT_FREQUENCY = 500; // 500ms
   var DEFAULT_PIXELATION = 1;
+  var DEFAULT_OPACITY = 255;
 
     // set default roughness/pixelation values if they don't exist 
   // or are invalid
   frequency = set_default(frequency, DEFAULT_FREQUENCY);
   pixelation = set_default(pixelation, DEFAULT_PIXELATION);
+  opacity = set_default(opacity, DEFAULT_OPACITY);
 
   var pixelify_id = Meteor.setInterval( function () {
     // generate_new_fractal(roughness, pixelation);
-    mutate_fractal(pixelation);
+    mutate_fractal(pixelation, opacity);
   }, frequency);
 
   Session.set('pixelify_id', pixelify_id);
+
+  return pixelify_id;
 };
 
-var stop_pixelify = function () {
-  Meteor.clearInterval( Session.get('pixelify_id') );
+var stop_pixelify = function (pixelify_id) {
+  pixelify_id = (typeof pixelify_id == 'undefined') ? Session.get('pixelify_id') : pixelify_id;
+  Meteor.clearInterval( pixelify_id );
   Session.set('pixelify_id', undefined);
 };
 
@@ -102,6 +108,35 @@ var stop_fluid = function () {
   Session.set('fluid_id', undefined);
 };
 
+/* TODO:
+ * Set background to be pre-made pixel party
+ * Allow user to stop pixel party
+ * Add Go button on main page
+ * Add input on main page to set number of pixel loops to be created
+ * Change implementation to drawRect instead of redrawing canvas each time, compare performance
+ */
+var pixel_party = function () {
+  for (var i=0; i < 100; i++)
+    create_pixel_loop();
+};
+
+var create_pixel_loop = function () {
+  var random_end = Math.floor(Math.random() * 120 + 1) * 1000;
+  var random_pixelation = Math.pow(2, Math.floor(Math.random() * 7));
+  var random_frequency = Math.floor(Math.random() * 500 * random_pixelation + 1);
+  var random_opacity = Math.floor(Math.random() * 155) + 100;
+  var pixelify_id = start_pixelify(0, random_pixelation, random_frequency, random_opacity);
+
+  console.log('random_end: ' + random_end);
+  console.log('random_pixelation: ' + random_pixelation);
+  console.log('random_frequency: ' + random_frequency);
+  console.log('random_opacity: ' + random_opacity);
+
+  Meteor.setTimeout(function () {
+      stop_pixelify(pixelify_id);
+      create_pixel_loop();
+    }, random_end);
+};
 
 // generate a new fractal based on the canvas with id="fractal"
 var generate_new_fractal = function (roughness_input, pixelation_input) {
@@ -232,17 +267,18 @@ var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_
 };
 
 // displaces a random point's colour and redraws the canvas
-var mutate_fractal = function (pixel_size) {
+var mutate_fractal = function (pixel_size, opacity) {
   var context = create_canvas('fractal');
-  var point = displace_random_point(context, pixel_size);
+  var point = displace_random_point(context, pixel_size, opacity);
   context.putImageData(image_data,  0, 0);
 };
 
 // displace a random point's colour by a random amount
 // takes canvas's context and pixel size and returns point
-var displace_random_point = function (context, pixel_size) {
+var displace_random_point = function (context, pixel_size, opacity) {
   var point = get_random_point(context, pixel_size);
   point.colour = displace_colour(point.colour);
+  point.colour.alpha = opacity;
   set_point(point.x, point.y, point.colour, pixel_size);
 
   return point;
