@@ -23,9 +23,9 @@
 </template>
 
 <template name="fractal">
-  <div class="row-fluid">
+  <div class="row span6">
     <div id="fractal-container" class="rounded-corners" style="border:3px solid black;padding-top:7px">
-      <canvas id="fractal" width="100px" height="100px">
+      <canvas id="fractal" height="240px" width="240px">
         Your browser is not compatible with HTML5. 
         Please upgrade your browser to view this wonderful plasma fractal!
       </canvas>
@@ -70,14 +70,14 @@
 </template>
 
 <template name="menu">
-  <div class="span4 offset1">
+  <div class="row span4 offset1">
     <form class="well form-inline" action="#">
       <input id="roughness" type="text" class="input-small" placeholder="Roughness">
       <input id="pixelation" type="text" class="input-small" placeholder="Pixelation">
       <input id="frequency" type="text" class="input-small" placeholder="Frequency">
     </form>
   </div>
-  <div id="buttons">
+  <div id="buttons" class="row span6">
     <button id="generate" class="btn btn-primary btn-large">
       <i class="icon-repeat"></i> Generate Fractal
     </button>

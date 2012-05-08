@@ -121,7 +121,6 @@ var generate_new_fractal = function (roughness_input, pixelation_input) {
   
   // draw the fractal with given roughness and pixelation
   draw_plasma(context, roughness, pixelation);
-  console.log(image_data);
 };
 
 // validate input to check that it is a number
@@ -235,11 +234,7 @@ var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_
 // displaces a random point's colour and redraws the canvas
 var mutate_fractal = function (pixel_size) {
   var context = create_canvas('fractal');
-
-  old_image_data = image_data;
-
   var point = displace_random_point(context, pixel_size);
-
   context.putImageData(image_data,  0, 0);
 };
 
@@ -247,16 +242,7 @@ var mutate_fractal = function (pixel_size) {
 // takes canvas's context and pixel size and returns point
 var displace_random_point = function (context, pixel_size) {
   var point = get_random_point(context, pixel_size);
-  index = get_index(point);
-  
-  // console.log(index);
-  // console.log(point);
-
   point.colour = displace_colour(point.colour);
-
-  // console.log('displaced colour:');
-  // console.log(point.colour);
-
   set_point(point.x, point.y, point.colour, pixel_size);
 
   return point;
@@ -346,7 +332,7 @@ var compute_color = function (c) {
 var set_point = function (x, y, colour, pixel_size) {
   var index;
   pixel_size = (typeof pixel_size == 'undefined') ? 1 : pixel_size;
-  
+
   for (i = 0; i < pixel_size; i++) {
     for (j = 0; j < pixel_size; j++) {
       index = ((x+j) + (y+i) * image_data.width) * 4;
