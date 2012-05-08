@@ -22,6 +22,23 @@
   </div>
 </template>
 
+<template name="fractal">
+  <div class="row-fluid">
+    <div id="fractal-container" class="rounded-corners" style="border:3px solid black;padding-top:7px">
+      <canvas id="fractal" width="100px" height="100px">
+        Your browser is not compatible with HTML5. 
+        Please upgrade your browser to view this wonderful plasma fractal!
+      </canvas>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <br />
+      {{>menu}}
+    </div>
+  </div>
+</template>
+
 <template name="instructions">
   <div id="instructions" style="color:white">
     <h2>Instructions</h2>
@@ -52,51 +69,39 @@
   </div>
 </template>
 
-<template name="fractal">
-  <div class="row-fluid">
-    <div id="fractal-container" class="rounded-corners" style="border:3px solid black;padding-top:7px">
-      <canvas id="fractal" width="480px" height="480px">
-        Your browser is not compatible with HTML5. 
-        Please upgrade your browser to view this wonderful plasma fractal!
-      </canvas>
-    </div>
-  </div>
-  <div class="row">
-    <div class="span4 offset1">
-      <br />
-      {{>menu}}
-    </div>
-  </div>
-</template>
-
 <template name="menu">
-  <form class="well form-inline" action="#">
-    <input id="roughness" type="text" class="input-small" placeholder="Roughness">
-    <input id="pixelation" type="text" class="input-small" placeholder="Pixelation">
-    <input id="frequency" type="text" class="input-small" placeholder="Frequency">
-  </form>
+  <div class="span4 offset1">
+    <form class="well form-inline" action="#">
+      <input id="roughness" type="text" class="input-small" placeholder="Roughness">
+      <input id="pixelation" type="text" class="input-small" placeholder="Pixelation">
+      <input id="frequency" type="text" class="input-small" placeholder="Frequency">
+    </form>
+  </div>
   <div id="buttons">
     <button id="generate" class="btn btn-primary btn-large">
       <i class="icon-repeat"></i> Generate Fractal
     </button>
+    {{#if is_pixelify}}
+    <button id="stop-pixelify" class="btn btn-primary btn-large">
+      <i class="icon-stop"></i> Stop!
+    </button>
+    {{else}}
+    <button id="start-pixelify" class="btn btn-primary btn-large" {{#if is_fluid}} disabled="disabled" {{/if}}>
+      <i class="icon-play"></i> Pixelify!
+    </button>
+    {{/if}}
+    <!--
     {{#if is_fluid}}
     <button id="stop-fluid" class="btn btn-primary btn-large">
       <i class="icon-stop"></i> Stop!
     </button>
     {{else}}
-    <button id="go-fluid" class="btn btn-primary btn-large">
+    <button id="go-fluid" class="btn btn-primary btn-large" {{#if is_pixelify}} disabled="disabled" {{/if}}>
       <i class="icon-play"></i> Go Fluid!
     </button>
     {{/if}}
+    -->
   </div>
-</template>
-
-<template name="loader">
-  {{#if show}}
-  <div class="loader">
-    <img src="loader.gif" alt="Loading..." />
-  </div>
-  {{/if}}
 </template>
 
 <template name="nav">

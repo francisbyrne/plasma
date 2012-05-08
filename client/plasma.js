@@ -1,16 +1,12 @@
 var image_data = {};
-
-// TODO: get this working!
-// display loading gif
-Template.loader.show = function () {
-  if (typeof Session.get('is_loading') !== 'undefined')
-    return true;
-  else
-    return false;
-};
+var old_image_data = {};
 
 Template.menu.is_fluid = function () {
   return Session.get('fluid_id');
+};
+
+Template.menu.is_pixelify = function () {
+  return Session.get('pixelify_id');
 };
 
 // generate new fractal on mouse click
@@ -26,6 +22,19 @@ Template.fractal.events = {
       // generate a new fractal
       generate_new_fractal(roughness, pixelation);
     }
+  },
+  'click button#start-pixelify': function (evt) {
+      // get the roughness, pixelation and frequency inputs
+      var roughness = $('#roughness').val();
+      var pixelation = $('#pixelation').val();
+      var frequency = $('#frequency').val();
+
+      // start pixelify mode
+      start_pixelify(roughness, pixelation, frequency);
+  },
+  'click button#stop-pixelify': function (evt) {
+      // stop fluid mode
+      stop_pixelify();
   },
   'click button#go-fluid': function (evt) {
       // get the roughness, pixelation and frequency inputs
@@ -47,19 +56,42 @@ Meteor.startup(function () {
   generate_new_fractal();
 });
 
-var go_fluid = function (roughness, pixelation, frequency) {
-
+// randomly spew coloured pixels onto the canvas
+var start_pixelify = function (roughness, pixelation, frequency) {
   var DEFAULT_FREQUENCY = 500; // 500ms
+  var DEFAULT_PIXELATION = 1;
 
     // set default roughness/pixelation values if they don't exist 
   // or are invalid
-  if (is_number(frequency) && frequency != 0)
-    frequency = parseInt(frequency);
-  else
-    frequency = DEFAULT_FREQUENCY;
+  frequency = set_default(frequency, DEFAULT_FREQUENCY);
+  pixelation = set_default(pixelation, DEFAULT_PIXELATION);
+
+  var pixelify_id = Meteor.setInterval( function () {
+    // generate_new_fractal(roughness, pixelation);
+    mutate_fractal(pixelation);
+  }, frequency);
+
+  Session.set('pixelify_id', pixelify_id);
+};
+
+var stop_pixelify = function () {
+  Meteor.clearInterval( Session.get('pixelify_id') );
+  Session.set('pixelify_id', undefined);
+};
+
+var go_fluid = function (roughness, pixelation, frequency) {
+
+  var DEFAULT_FREQUENCY = 500; // 500ms
+  var DEFAULT_PIXELATION = 1;
+
+    // set default roughness/pixelation values if they don't exist 
+  // or are invalid
+  frequency = set_default(frequency, DEFAULT_FREQUENCY);
+  pixelation = set_default(pixelation, DEFAULT_PIXELATION);
 
   var fluid_id = Meteor.setInterval( function () {
-    generate_new_fractal(roughness, pixelation);
+    // generate_new_fractal(roughness, pixelation);
+    mutate_fractal(pixelation);
   }, frequency);
 
   Session.set('fluid_id', fluid_id);
@@ -79,34 +111,35 @@ var generate_new_fractal = function (roughness_input, pixelation_input) {
 
   // set default roughness/pixelation values if they don't exist 
   // or are invalid
-  if (is_number(roughness_input) && roughness_input != 0)
-    var roughness = parseInt(roughness_input);
-  else
-    var roughness = DEFAULT_ROUGHNESS;
+  var roughness = set_default(roughness_input, DEFAULT_ROUGHNESS);
+  var pixelation = set_default(pixelation_input, DEFAULT_PIXELATION);
 
-  if (is_number(pixelation_input) && pixelation_input > 0)
-    var pixelation = parseInt(pixelation_input);
-  else
-    var pixelation = DEFAULT_PIXELATION;
-
-  // get canvas element
-  var c = document.getElementById("fractal");
-  var context = c.getContext("2d");
-
-  // clear canvas
-  clear_canvas(context);
+  var context = create_canvas("fractal");
 
   // create image data array for storing pixels (currently using global variable)
   image_data = context.createImageData(context.canvas.width, context.canvas.height);
-
+  
   // draw the fractal with given roughness and pixelation
   draw_plasma(context, roughness, pixelation);
+  console.log(image_data);
 };
 
 // validate input to check that it is a number
 var is_number = function (input) {
   var regex = /[0-9]|\./;
   return regex.test(input);
+};
+
+// takes canvas DOM id, clears it and returns the canvas context
+var create_canvas = function (canvas_id) {
+  // get canvas element
+  var c = document.getElementById(canvas_id);
+  var context = c.getContext("2d");
+
+  // clear canvas
+  clear_canvas(context);
+
+  return context;
 };
 
 // helper method to clear the canvas
@@ -195,27 +228,93 @@ var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_
 
     // for each row (y-value) and column (x-value) in the block set by pixelation factor, 
     // set the pixels to the random colour
-    for (var i = 0; i < pixel_size; i++) {
-      for (var j = 0; j < pixel_size; j++) {
-      set_pixel(
-        Math.floor(x) + j, 
-        Math.floor(y) + i, 
-        colour,
-        pixel_size );
-      }
-    }
+    set_point(Math.floor(x), Math.floor(y), colour, pixel_size );
   }
+};
+
+// displaces a random point's colour and redraws the canvas
+var mutate_fractal = function (pixel_size) {
+  var context = create_canvas('fractal');
+
+  old_image_data = image_data;
+
+  var point = displace_random_point(context, pixel_size);
+
+  context.putImageData(image_data,  0, 0);
+};
+
+// displace a random point's colour by a random amount
+// takes canvas's context and pixel size and returns point
+var displace_random_point = function (context, pixel_size) {
+  var point = get_random_point(context, pixel_size);
+  index = get_index(point);
+  
+  // console.log(index);
+  // console.log(point);
+
+  point.colour = displace_colour(point.colour);
+
+  // console.log('displaced colour:');
+  // console.log(point.colour);
+
+  set_point(point.x, point.y, point.colour, pixel_size);
+
+  return point;
+};
+
+var displace_colour = function (colour) {
+  var multiplier = 255;
+  colour.red = bound_value( colour.red + Math.floor((Math.random() - 0.5) * multiplier) );
+  colour.green = bound_value( colour.green + Math.floor((Math.random() - 0.5) * multiplier) );
+  colour.blue = bound_value( colour.blue + Math.floor((Math.random() - 0.5) * multiplier) );
+
+  return colour;
+};
+
+// returns a random point on the canvas along with its colour
+var get_random_point = function (context, pixel_size) {
+  var point = {};
+  var width = context.canvas.width / pixel_size - 1;
+  var rand_x = Math.random()
+  point.x = Math.round(rand_x * width) * pixel_size;
+  var height = context.canvas.height / pixel_size - 1;
+  var rand_y = Math.random();
+  point.y = Math.round(rand_y * height) * pixel_size;
+  point.colour = get_colour(point);
+
+  return point;
+};
+
+// checks that a value doesn't exceed a max/min value and sets it to
+// max/min if so
+var bound_value = function (value, min, max) {
+  min = (typeof min == 'undefined') ? 0 : min;
+  max = (typeof max == 'undefined') ? 255 : max;
+  if (value > max)
+    value = max;
+  else if (value < min)
+    value = min;
+  return value;
+};
+
+
+// check if value is a number and not 0.
+// if so return integer value, else return default
+var set_default = function (value, default_value) {
+  return (is_number(value) && value != 0) ? parseInt(value) : default_value
 };
 
 
 // randomly displaces color value for midpoint depending on size
 // of grid piece.
 var displace = function (context, num, roughness) {
+  num = (typeof num == 'undefined') ? 1 : num;
+  roughness = (typeof roughness == 'undefined') ? 3 : roughness;
   var max = num / (context.canvas.width + context.canvas.height) * roughness;
   return (Math.random() - 0.5) * max;
 };
 
-// returns an rgba color object based on a color value, c.
+// returns an rgba color object based on a color value between 0 and 1, c.
 // eg. {red: 42, green: 71, blue: 255, alpha: 255}
 var compute_color = function (c) {   
   var red = 0;
@@ -244,10 +343,33 @@ var compute_color = function (c) {
 
 // set the red, green, blue and alpha components of a pixel at x, y
 // in the image_data array, which will be drawn to the canvas
-function set_pixel(x, y, colour, pixel_size) {
-  var index = (x + y * image_data.width) * 4;
-  image_data.data[index+0] = colour.red;
-  image_data.data[index+1] = colour.green;
-  image_data.data[index+2] = colour.blue;
-  image_data.data[index+3] = colour.alpha;
+var set_point = function (x, y, colour, pixel_size) {
+  var index;
+  pixel_size = (typeof pixel_size == 'undefined') ? 1 : pixel_size;
+  
+  for (i = 0; i < pixel_size; i++) {
+    for (j = 0; j < pixel_size; j++) {
+      index = ((x+j) + (y+i) * image_data.width) * 4;
+      image_data.data[index+0] = colour.red;
+      image_data.data[index+1] = colour.green;
+      image_data.data[index+2] = colour.blue;
+      image_data.data[index+3] = colour.alpha;
+    }
+  }
+};
+
+// return a colour object at x, y on the canvas
+var get_colour = function (point) {
+  var colour = {};
+  var index = get_index(point);
+  colour.red = image_data.data[index];
+  colour.green = image_data.data[index+1];
+  colour.blue = image_data.data[index+2];
+  colour.alpha = image_data.data[index+3];
+
+  return colour;
+};
+
+var get_index = function (point) {
+  return (point.x + point.y * image_data.width) * 4;
 };
