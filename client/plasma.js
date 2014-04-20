@@ -1,11 +1,11 @@
 var image_data = {};
 var old_image_data = {};
 
-Template.menu.is_fluid = function () {
-  return Session.get('fluid_id');
+Template.menu.isFluidDisabled = function () {
+  return Session.get('fluid_id') ? '' : 'disabled="disabled"';
 };
 
-Template.menu.is_pixelify = function () {
+Template.menu.isPixelify = function () {
   return Session.get('pixelify_id');
 };
 
