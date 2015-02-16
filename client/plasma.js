@@ -63,7 +63,7 @@ var start_pixelify = function (roughness, pixelation, frequency, opacity) {
   var DEFAULT_PIXELATION = 1;
   var DEFAULT_OPACITY = 255;
 
-    // set default roughness/pixelation values if they don't exist 
+    // set default roughness/pixelation values if they don't exist
   // or are invalid
   frequency = set_default(frequency, DEFAULT_FREQUENCY);
   pixelation = set_default(pixelation, DEFAULT_PIXELATION);
@@ -90,7 +90,7 @@ var go_fluid = function (roughness, pixelation, frequency) {
   var DEFAULT_FREQUENCY = 500; // 500ms
   var DEFAULT_PIXELATION = 1;
 
-    // set default roughness/pixelation values if they don't exist 
+    // set default roughness/pixelation values if they don't exist
   // or are invalid
   frequency = set_default(frequency, DEFAULT_FREQUENCY);
   pixelation = set_default(pixelation, DEFAULT_PIXELATION);
@@ -127,10 +127,10 @@ var create_pixel_loop = function () {
   var random_opacity = Math.floor(Math.random() * 155) + 100;
   var pixelify_id = start_pixelify(0, random_pixelation, random_frequency, random_opacity);
 
-  console.log('random_end: ' + random_end);
-  console.log('random_pixelation: ' + random_pixelation);
-  console.log('random_frequency: ' + random_frequency);
-  console.log('random_opacity: ' + random_opacity);
+  // console.log('random_end: ' + random_end);
+  // console.log('random_pixelation: ' + random_pixelation);
+  // console.log('random_frequency: ' + random_frequency);
+  // console.log('random_opacity: ' + random_opacity);
 
   Meteor.setTimeout(function () {
       stop_pixelify(pixelify_id);
@@ -144,7 +144,7 @@ var generate_new_fractal = function (roughness_input, pixelation_input) {
   var DEFAULT_ROUGHNESS = 3;
   var DEFAULT_PIXELATION = 1; // 1px minimum pixel size
 
-  // set default roughness/pixelation values if they don't exist 
+  // set default roughness/pixelation values if they don't exist
   // or are invalid
   var roughness = set_default(roughness_input, DEFAULT_ROUGHNESS);
   var pixelation = set_default(pixelation_input, DEFAULT_PIXELATION);
@@ -153,7 +153,7 @@ var generate_new_fractal = function (roughness_input, pixelation_input) {
 
   // create image data array for storing pixels (currently using global variable)
   image_data = context.createImageData(context.canvas.width, context.canvas.height);
-  
+
   // draw the fractal with given roughness and pixelation
   draw_plasma(context, roughness, pixelation);
 };
@@ -188,31 +188,31 @@ var clear_canvas = function (context) {
 };
 
 // this is something of a "helper function" to create an initial grid
-// before the recursive function is called.  
+// before the recursive function is called.
 var draw_plasma = function (context, roughness, pixelation) {
   var c1, c2, c3, c4;
-  
+
   // assign the four corners of the intial grid random color values
-  // these will end up being the colors of the four corners of the applet.   
+  // these will end up being the colors of the four corners of the applet.
   c1 = Math.random();
   c2 = Math.random();
   c3 = Math.random();
   c4 = Math.random();
-      
+
   // call recursive method to divide the grid into four smaller grids and
   // at the base level (where grid is smaller than pixelation factor),
-  // set the pixel colour semi-randomly, based on grid size and 
+  // set the pixel colour semi-randomly, based on grid size and
   // roughness factor.
-  divide_grid(context, 
-              0, 
-              0, 
-              context.canvas.width, 
-              context.canvas.height, 
-              c1, 
-              c2, 
-              c3, 
-              c4, 
-              pixelation, 
+  divide_grid(context,
+              0,
+              0,
+              context.canvas.width,
+              context.canvas.height,
+              c1,
+              c2,
+              c3,
+              c4,
+              pixelation,
               roughness);
 
  // copy the image data back onto the canvas
@@ -221,31 +221,31 @@ var draw_plasma = function (context, roughness, pixelation) {
 
 // this is the recursive function that implements the random midpoint
 // displacement algorithm.  It will call itself until the grid pieces
-// become smaller than one pixel.  
+// become smaller than one pixel.
 var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_size, roughness) {
 
-  // check if grid size is greater than minimum pixel size 
+  // check if grid size is greater than minimum pixel size
   // (set by pixelation input)
   // if not, jump to base case, else recurse
-  if (width > pixel_size || height > pixel_size) { 
+  if (width > pixel_size || height > pixel_size) {
     var edge1, edge2, edge3, edge4, middle;
     var new_width = width / 2;
     var new_height = height / 2;
 
     // randomly displace the midpoint based on the grid size and roughness factor
-    middle = (c1 + c2 + c3 + c4) / 4 + displace(context, new_width + new_height, roughness);  
+    middle = (c1 + c2 + c3 + c4) / 4 + displace(context, new_width + new_height, roughness);
     edge1 = (c1 + c2) / 2;  //Calculate the edges by averaging the two corners of each edge.
     edge2 = (c2 + c3) / 2;
     edge3 = (c3 + c4) / 2;
     edge4 = (c4 + c1) / 2;
-    
+
     // make sure that the midpoint doesn't accidentally "randomly displace" past the boundaries!
     if (middle < 0)
       middle = 0;
     else if (middle > 1.0)
       middle = 1.0;
-    
-    // do the operation over again for each of the four new grids.     
+
+    // do the operation over again for each of the four new grids.
     divide_grid(context, x, y, new_width, new_height, c1, edge1, middle, edge4, pixel_size, roughness);
     divide_grid(context, x + new_width, y, new_width, new_height, edge1, c2, edge2, middle, pixel_size, roughness);
     divide_grid(context, x + new_width, y + new_height, new_width, new_height, middle, edge2, c3, edge3, pixel_size, roughness);
@@ -260,7 +260,7 @@ var divide_grid = function (context, x, y, width, height, c1, c2, c3, c4, pixel_
     // get a colour object with red, green, blue and alpha properties
     var colour = compute_color(c);
 
-    // for each row (y-value) and column (x-value) in the block set by pixelation factor, 
+    // for each row (y-value) and column (x-value) in the block set by pixelation factor,
     // set the pixels to the random colour
     set_point(Math.floor(x), Math.floor(y), colour, pixel_size );
   }
@@ -338,28 +338,28 @@ var displace = function (context, num, roughness) {
 
 // returns an rgba color object based on a color value between 0 and 1, c.
 // eg. {red: 42, green: 71, blue: 255, alpha: 255}
-var compute_color = function (c) {   
+var compute_color = function (c) {
   var red = 0;
   var green = 0;
   var blue = 0;
-  
+
   if (c < 0.5)
     red = c * 2;
   else
     red = (1.0 - c) * 2;
-  
+
   if (c >= 0.3 && c < 0.8)
     green = (c - 0.3) * 2;
   else if (c < 0.3)
     green = (0.3 - c) * 2;
   else
     green = (1.3 - c) * 2;
-  
+
   if (c >= 0.5)
     blue = (c - 0.5) * 2;
   else
     blue = (0.5 - c) * 2;
-  
+
   return {'red': red * 255, 'green': green * 255, 'blue': blue * 255, 'alpha': 255};
 };
 
